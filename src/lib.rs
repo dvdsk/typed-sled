@@ -71,11 +71,13 @@ pub struct Tree<K, V> {
     value: PhantomData<V>,
 }
 
+/// Compare and swap error.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct CompareAndSwapError<V> {
+    /// The current value which caused your CAS to fail.
     pub current: Option<V>,
+    /// Returned value that was proposed unsuccessfully.
     pub proposed: Option<V>,
-    value: PhantomData<V>,
 }
 
 impl<V> fmt::Display for CompareAndSwapError<V> {
@@ -168,7 +170,6 @@ impl<
                 cas_res.map_err(|cas_err| CompareAndSwapError {
                     current: cas_err.current.as_ref().map(|b| deserialize(b)),
                     proposed: cas_err.proposed.as_ref().map(|b| deserialize(b)),
-                    value: PhantomData,
                 })
             })
     }
@@ -647,7 +648,6 @@ mod tests {
             Err(CompareAndSwapError {
                 current: Some(current),
                 proposed: Some(proposed),
-                value: PhantomData,
             }),
         );
     }
